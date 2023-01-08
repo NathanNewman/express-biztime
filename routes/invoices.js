@@ -5,7 +5,7 @@ const ExpressError = require("../expressError");
 
 router.get("/", async function (req, res, next) {
   try {
-    const result = await db.query("SELECT id, comp_code FROM invoices");
+    const result = await db.query("SELECT id, comp_code, amt FROM invoices");
     return res.json({ invoices: result.rows });
   } catch (err) {
     return next(err);
