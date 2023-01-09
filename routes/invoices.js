@@ -19,7 +19,7 @@ router.get("/:id", async function (req, res, next) {
       invoice,
     ]);
     if (result.rows.length === 0) {
-      throw new ExpressError(`Can't find invoice ${result.name}`, 404);
+      throw new ExpressError(`Can't find invoice ${result.id}`, 404);
     }
     return res.json({ invoice: result.rows[0] });
   } catch (error) {

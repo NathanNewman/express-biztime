@@ -22,12 +22,27 @@ CREATE TABLE invoices (
     CONSTRAINT invoices_amt_check CHECK ((amt > (0)::double precision))
 );
 
+CREATE TABLE industries (
+  id serial PRIMARY KEY,
+  name text NOT NULL UNIQUE
+);
+
+CREATE TABLE comp_ind (
+  comp_code text NOT NULL REFERENCES companies ON DELETE CASCADE,
+  ind_id integer NOT NULL REFERENCES industries ON DELETE CASCADE
+);
+
 INSERT INTO companies
   VALUES ('apple', 'Apple Computer', 'Maker of OSX.'),
-         ('ibm', 'IBM', 'Big blue.');
+         ('ibm', 'IBM', 'Big blue.'),
+         ('visa', 'Visa Corporation', 'Credit card company');
 
 INSERT INTO invoices (comp_Code, amt, paid, paid_date)
   VALUES ('apple', 100, false, null),
          ('apple', 200, false, null),
          ('apple', 300, true, '2018-01-01'),
          ('ibm', 400, false, null);
+
+INSERT INTO industries VALUES (1, 'Tech'), (2, 'Finance');
+
+INSERT INTO comp_ind VALUES ('apple', 1), ('ibm', 1), ('visa', 2);
