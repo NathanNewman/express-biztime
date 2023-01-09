@@ -7,23 +7,35 @@ const db = require("../db");
 
 let testCompany;
 let testInvoice;
+let testIndustry;
 beforeEach(async () => {
   const company = await db.query(
     `INSERT INTO companies (code, name, description) 
     VALUES ('MSFT', 'Microsoft Corporation', 'The company that created Windows OS') 
-    RETURNING code, name`
+    RETURNING code, name, description`
   );
   const invoice = await db.query(
-    `INSERT INTO invoices (comp_code, amt) VALUES ('MSFT', '100') RETURNING id, comp_code, amt`
+    `INSERT INTO invoices (comp_code, amt, add_date) VALUES ('MSFT', '100', '2023-01-08') RETURNING id, comp_code, amt, add_date, paid, paid_date`
   );
+
+  const industries = await db.query(
+    `INSERT INTO industries (id, name) VALUES ('1', 'Tech') RETURNING id, name`
+  );
+  const comp_ind = await db.query(`INSERT INTO comp_ind (comp_code, ind_id) VALUES ('MSFT', '1') RETURNING comp_code, ind_id`);
   testCompany = company.rows[0];
   testInvoice = invoice.rows;
+  testIndustry = industries.rows;
   testCompany.invoices = testInvoice.map((inv) => inv.id);
+  testCompany.industries = ["Tech"];
+  console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+  console.log(testCompany);
 });
 
 afterEach(async () => {
   await db.query("DELETE FROM companies");
   await db.query("DELETE FROM invoices");
+  await db.query("DELETE FROM industries");
+  await db.query("DELETE FROM comp_ind");
 });
 
 afterAll(async () => {
@@ -45,12 +57,7 @@ describe("GET /companies/:code", () => {
     const res = await request(app).get(`/companies/${testCompany.code}`);
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({
-      company: {
-        code: testCompany.code,
-        name: testCompany.name,
-        description: 'The company that created Windows OS',
-        invoices: testCompany.invoices,
-      },
+      company: testCompany,
     });
   });
   test("Get a single company", async () => {
@@ -61,7 +68,7 @@ describe("GET /companies/:code", () => {
 
 describe("POST /companies", () => {
   test("Create a new company", async () => {
-    const res = await request(app).post('/companies').send({
+    const res = await request(app).post("/companies").send({
       code: "GOOG",
       name: "Google",
       description: "Made popular search engine",
@@ -98,7 +105,7 @@ describe("DELETE /companies/:code", () => {
   test("DELETE a single company", async () => {
     const res = await request(app).delete(`/companies/${testCompany.code}`);
     expect(res.statusCode).toBe(200);
-    expect(res.body).toEqual({ msg : `Deleted ${testCompany.code}!`});
+    expect(res.body).toEqual({ msg: `Deleted ${testCompany.code}!` });
   });
   test("Fail to DELETE a single company", async () => {
     const res = await request(app).get("/companies/0");

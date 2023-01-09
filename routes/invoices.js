@@ -83,7 +83,7 @@ router.put("/:id", async function (req, res, next) {
 router.delete("/:id", async function (req, res, next) {
   const id = req.params.id;
   try {
-    await db.query("DELETE FROM companies WHERE code = $1", [id]);
+    await db.query("DELETE FROM invoices WHERE id = $1", [id]);
     return res.json({ msg: `Deleted invoice with id: ${id}!` });
   } catch (error) {
     return next(error);

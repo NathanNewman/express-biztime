@@ -43,6 +43,7 @@ INSERT INTO invoices (comp_Code, amt, paid, paid_date)
          ('apple', 300, true, '2018-01-01'),
          ('ibm', 400, false, null);
 
-INSERT INTO industries VALUES (1, 'Tech'), (2, 'Finance');
+INSERT INTO industries VALUES (1, 'Tech'), (2, 'Finance'), (3, 'Phone');
 
-INSERT INTO comp_ind VALUES ('apple', 1), ('ibm', 1), ('visa', 2);
+INSERT INTO comp_ind VALUES ('apple', 1), ('ibm', 1), ('visa', 2), ('apple', 3);
+

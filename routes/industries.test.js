@@ -23,8 +23,6 @@ beforeEach(async () => {
   testInvoice = invoice.rows;
   testIndustry = industries.rows;
   testCompany.invoices = testInvoice.map((inv) => inv.id);
-  console.log('#######################################################');
-  console.log(testIndustry[0]);
 });
 
 afterEach(async () => {
@@ -48,8 +46,32 @@ describe("GET /industries", () => {
 
 describe("GET /industries/:id", () => {
     test("GET one industry", async () => {
-        const res = await request(app).get("/industries");
+        const res = await request(app).get(`/industries/${testIndustry[0].id}`);
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual({ industry : testIndustry[0] });
+    });
+});
+
+describe("POST /industries", () => {
+    test("CREATE an industry", async () => {
+        const res = await request(app).post('/industries').send({ name : 'Energy' });
+        expect(res.statusCode).toBe(201);
+        expect(res.body).toEqual({ industry : { id : expect.any(Number), name : 'Energy' } });
+    });
+});
+
+describe("PUT /industries/:id", () => {
+    test("Update an industry", async () => {
+        const res = await request(app).put(`/industries/${testIndustry[0].id}`).send({ name : 'Oil' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual({ industry : { id : expect.any(Number), name : 'Oil' } });
+    });
+});
+
+describe("DELETE /industries/:id", () => {
+    test("Delete an industry", async () => {
+        const res = await request(app).delete(`/industries/${testIndustry[0].id}`)
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual({ msg : `Deleted industry with id: ${testIndustry[0].id}!`});
     });
 });
